@@ -11,10 +11,10 @@ The dashboard contains calculated fields with the following expressions:
 | --- | --- |
 | ProductRankInCategory | aggr(w(RankDense(Sum([ProductSales]), 'desc'), PartitionBy([CategoryName]), OrderBy()), [CategoryName], [ProductName])
 
-The grid shows the products with the ProductRankInCategory value that is more or equal to the parameter value (default value is 2).
+The grid shows the products with the **ProductRankInCategory** value that is more or equal to the parameter value (default value is 2).
 
-Grid rows in the Top Products and OTHERS are sorted by the 
-TopNProductsSortOrder calculated field for proper arrangement.
+Grid rows in the _Top Products_ and _OTHERS_ are sorted by the 
+**TopNProductsSortOrder** calculated field for proper arrangement.
 
 See also:
 
