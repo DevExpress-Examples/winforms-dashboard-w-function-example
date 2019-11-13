@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard>
+  <Title Text="Top N Products In Each Category" />
+  <DataSources>
+    <ExcelDataSource Name="Excel Data Source 1" FileName="..\..\Data\SalesPerson.xlsx" ComponentName="dashboardExcelDataSource1">
+      <Options Type="DevExpress.DataAccess.Excel.ExcelSourceOptions" SkipEmptyRows="true" UseFirstRowAsHeader="true" SkipHiddenColumns="true" SkipHiddenRows="true">
+        <ImportSettings Type="DevExpress.DataAccess.Excel.ExcelWorksheetSettings" WorksheetName="Data" />
+      </Options>
+      <Schema>
+        <FieldInfo Name="CategoryName" Type="System.String" Selected="true" />
+        <FieldInfo Name="Country" Type="System.String" Selected="true" />
+        <FieldInfo Name="FirstName" Type="System.String" Selected="true" />
+        <FieldInfo Name="LastName" Type="System.String" Selected="true" />
+        <FieldInfo Name="ProductName" Type="System.String" Selected="true" />
+        <FieldInfo Name="Sales Person" Type="System.String" Selected="true" />
+        <FieldInfo Name="OrderDate" Type="System.DateTime" Selected="true" />
+        <FieldInfo Name="OrderID" Type="System.Double" Selected="true" />
+        <FieldInfo Name="Quantity" Type="System.Double" Selected="true" />
+        <FieldInfo Name="Discount" Type="System.Double" Selected="true" />
+        <FieldInfo Name="ProductSales" Type="System.Double" Selected="true" />
+        <FieldInfo Name="UnitPrice" Type="System.Double" Selected="true" />
+      </Schema>
+      <ResultSchema>
+        <View>
+          <Field Name="CategoryName" Type="String" />
+          <Field Name="Country" Type="String" />
+          <Field Name="FirstName" Type="String" />
+          <Field Name="LastName" Type="String" />
+          <Field Name="ProductName" Type="String" />
+          <Field Name="Sales Person" Type="String" />
+          <Field Name="OrderDate" Type="DateTime" />
+          <Field Name="OrderID" Type="Double" />
+          <Field Name="Quantity" Type="Double" />
+          <Field Name="Discount" Type="Double" />
+          <Field Name="ProductSales" Type="Double" />
+          <Field Name="UnitPrice" Type="Double" />
+        </View>
+      </ResultSchema>
+      <CalculatedFields>
+        <CalculatedField Name="ProductRankInCategory" Expression="aggr(w(RankDense(Sum([ProductSales]), 'desc'), PartitionBy([CategoryName]), OrderBy()), [CategoryName], [ProductName])" DataType="Auto" DataMember="[Order Details]" />
+        <CalculatedField Name="TopNProductName" Expression="Iif([ProductRankInCategory] &lt;= [Parameters.TopValueCount], [ProductName], 'OTHERS')" DataType="Auto" DataMember="[Order Details]" />
+        <CalculatedField Name="TopNProductSortOrder" Expression="Iif(Min([ProductRankInCategory]) &lt;= [Parameters.TopValueCount], Min([ProductRankInCategory]), 1000000000)" DataType="Auto" DataMember="[Order Details]" />
+      </CalculatedFields>
+    </ExcelDataSource>
+  </DataSources>
+  <Parameters>
+    <Parameter Name="TopValueCount" Type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Value="2" />
+  </Parameters>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Top Products Only" DataSource="dashboardExcelDataSource1" FilterString="[DataItem0] &lt;= ?TopValueCount">
+      <DataItems>
+        <Dimension DataMember="ProductRankInCategory" DefaultId="DataItem0" />
+        <Dimension DataMember="CategoryName" DefaultId="DataItem1" />
+        <Dimension DataMember="ProductName" DefaultId="DataItem2" />
+        <Measure DataMember="ProductSales" DefaultId="DataItem3">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" />
+        </Measure>
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </HiddenDimensions>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" Enabled="false">
+          <FormatConditionBar>
+            <NegativeStyleSettings PredefinedColor="PaleRed" />
+            <StyleSettings PredefinedColor="PaleBlue" />
+            <BarOptions />
+          </FormatConditionBar>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Auto" />
+          </Totals>
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions AllowGridCellMerge="true" />
+    </Grid>
+    <Grid ComponentName="gridDashboardItem2" Name="Top Products And OTHERS" DataSource="dashboardExcelDataSource1">
+      <DataItems>
+        <Dimension DataMember="TopNProductName" SortByMeasure="DataItem2" DefaultId="DataItem0" />
+        <Dimension DataMember="CategoryName" DefaultId="DataItem1" />
+        <Measure DataMember="TopNProductSortOrder" DefaultId="DataItem2" />
+        <Measure DataMember="ProductSales" DefaultId="DataItem3" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem2" />
+      </HiddenMeasures>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem3">
+          <FormatConditionBar>
+            <NegativeStyleSettings PredefinedColor="PaleRed" />
+            <StyleSettings PredefinedColor="PaleBlue" />
+            <BarOptions />
+          </FormatConditionBar>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Auto" />
+          </Totals>
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions AllowGridCellMerge="true" />
+    </Grid>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup Weight="100">
+      <LayoutItem DashboardItem="gridDashboardItem1" Weight="50.326323422770123" />
+      <LayoutItem DashboardItem="gridDashboardItem2" Weight="49.673676577229877" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>
