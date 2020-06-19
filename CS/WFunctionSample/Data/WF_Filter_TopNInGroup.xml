@@ -30,24 +30,22 @@
         </View>
       </ResultSchema>
       <CalculatedFields>
-        <CalculatedField Name="ProductRankInCategory" Expression="aggr(w(RankDense(Sum([ProductSales]), 'desc'), PartitionBy([CategoryName]), OrderBy()), [CategoryName], [ProductName])" DataType="Auto" DataMember="[Order Details]" />
+        <CalculatedField Name="ProductRankInCategory" Expression="aggr(w(Index(), partitionBy([CategoryName]), orderBy(desc(Sum([ProductSales])))), [CategoryName], [ProductName])" DataType="Auto" DataMember="[Order Details]" />
         <CalculatedField Name="TopNProductName" Expression="Iif([ProductRankInCategory] &lt;= [Parameters.TopValueCount], [ProductName], 'OTHERS')" DataType="Auto" DataMember="[Order Details]" />
         <CalculatedField Name="TopNProductSortOrder" Expression="Iif(Min([ProductRankInCategory]) &lt;= [Parameters.TopValueCount], Min([ProductRankInCategory]), 1000000000)" DataType="Auto" DataMember="[Order Details]" />
       </CalculatedFields>
     </ExcelDataSource>
   </DataSources>
   <Parameters>
-    <Parameter Name="TopValueCount" Type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Value="2" />
+    <Parameter Name="TopValueCount" Type="System.Int32" Value="2" />
   </Parameters>
   <Items>
     <Grid ComponentName="gridDashboardItem1" Name="Top Products Only" DataSource="dashboardExcelDataSource1" FilterString="[DataItem0] &lt;= ?TopValueCount">
       <DataItems>
-        <Dimension DataMember="ProductRankInCategory" DefaultId="DataItem0" />
         <Dimension DataMember="CategoryName" DefaultId="DataItem1" />
         <Dimension DataMember="ProductName" DefaultId="DataItem2" />
-        <Measure DataMember="ProductSales" DefaultId="DataItem3">
-          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" />
-        </Measure>
+        <Measure DataMember="ProductSales" DefaultId="DataItem4" />
+        <Dimension DataMember="ProductRankInCategory" DefaultId="DataItem0" />
       </DataItems>
       <HiddenDimensions>
         <Dimension DefaultId="DataItem0" />
@@ -69,17 +67,17 @@
           <Dimension DefaultId="DataItem2" />
         </GridDimensionColumn>
         <GridMeasureColumn>
-          <Measure DefaultId="DataItem3" />
+          <Measure DefaultId="DataItem4" />
         </GridMeasureColumn>
       </GridColumns>
       <GridOptions AllowGridCellMerge="true" />
     </Grid>
     <Grid ComponentName="gridDashboardItem2" Name="Top Products And OTHERS" DataSource="dashboardExcelDataSource1">
       <DataItems>
-        <Dimension DataMember="TopNProductName" SortByMeasure="DataItem2" DefaultId="DataItem0" />
         <Dimension DataMember="CategoryName" DefaultId="DataItem1" />
-        <Measure DataMember="TopNProductSortOrder" DefaultId="DataItem2" />
         <Measure DataMember="ProductSales" DefaultId="DataItem3" />
+        <Dimension DataMember="TopNProductName" SortByMeasure="DataItem2" DefaultId="DataItem0" />
+        <Measure DataMember="TopNProductSortOrder" DefaultId="DataItem2" />
       </DataItems>
       <HiddenMeasures>
         <Measure DefaultId="DataItem2" />
